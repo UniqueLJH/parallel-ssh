@@ -244,7 +244,8 @@ class SSHClient(object):
         else:
             _command += '"%s"' % (command,)
         logger.debug("Running parsed command %s on %s", _command, self.host)
-        channel.exec_command(_command, **kwargs)
+        stdin, stdout, srderr = channel.exec_command(_command, **kwargs)
+        stdin.write("Y\n")
         logger.debug("Command started")
         sleep(0)
         return channel, self.host, stdout, stderr
