@@ -225,7 +225,8 @@ class SSHClient(object):
             agent_handler = paramiko.agent.AgentRequestHandler(channel)
         channel.get_pty()
         if self.channel_timeout:
-            channel.settimeout(self.channel_timeout)
+             channel.settimeout(self.channel_timeout)
+        _stdin = channel.makefile("wb")
         _stdout, _stderr = channel.makefile('rb'), \
                            channel.makefile_stderr('rb')
         stdout, stderr = self._read_output_buffer(_stdout,), \
@@ -244,8 +245,8 @@ class SSHClient(object):
         else:
             _command += '"%s"' % (command,)
         logger.debug("Running parsed command %s on %s", _command, self.host)
-        stdin, stdout, srderr = channel.exec_command(_command, **kwargs)
-        stdin.write("Y\n")
+        channel.exec_command(_command, **kwargs)
+        _stdin.write("Y\n")
         logger.debug("Command started")
         sleep(0)
         return channel, self.host, stdout, stderr
